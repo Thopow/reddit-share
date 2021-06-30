@@ -1,0 +1,45 @@
+#!/bin/bash
+# Created 2021-06-27 
+# T-File - File selector by Thomas Pautler
+#  ______      ____
+# /_  __/___  / __ \____ _      __
+#  / / / __ \/ /_/ / __ \ | /| / /
+# / / / /_/ / ____/ /_/ / |/ |/ /
+#/_/  \____/_/    \____/|__/|__/
+#
+
+source b-moduls
+#Vars
+
+
+file_selector() {
+	PS3="Please select:"
+	FOLDER=$(ls -F --group-directories-first ${INDIR[-1]})
+	SHOW="⏫Back $FOLDER"
+	print_l "━━━ ${INDIR[-1]} " "━"
+	select FILEDIR in ${SHOW}; do 
+		if [[ "$FILEDIR" == */ ]]; then
+			SETDIR=("${INDIR[-1]}$FILEDIR")
+			echo "setdir=$SETDIR"
+			INDIR=("${INDIR[@]}" "$SETDIR")
+			clear -x
+			file_selector "${INDIR[-1]}"
+		elif
+			[[ "$FILEDIR" == "⏫Back" ]]; then 
+			[[ ${#INDIR[@]} -gt 1 ]] && unset INDIR[-1]
+			clear -x
+			file_selector "${INDIR[-1]}"
+		elif
+			[[ "$FILEDIR" != */ ]]; then
+			OUT_FILE="${INDIR[-1]}$FILEDIR"
+			return 0
+		fi
+		return 0
+	 done
+}
+
+
+clear -x
+INDIR=("${HOME}/")
+file_selector
+echo $OUT_FILE
